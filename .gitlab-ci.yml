@@ -1,6 +1,8 @@
 build:
   stage: build
-  tags: docker
-  commands:
+  tags:
+  - docker
+  image: node:10
+  script:
     - npm ci
     - npm run build
