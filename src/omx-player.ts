@@ -4,6 +4,12 @@ import ChildProcess from 'child_process';
 import { AbstractPlayer } from './abstract-player';
 
 export interface OmxPlayerArgs {
+    /**
+     * On a Raspberry Pi 4:
+     * 2 = hdmi0
+     * 7 = hdmi1
+     * https://forums.raspberrypi.com/viewtopic.php?f=63&t=244589
+     */
     additionalArgs: string[];
 }
 

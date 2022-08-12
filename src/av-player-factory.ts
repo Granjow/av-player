@@ -36,6 +36,8 @@ export class AvPlayerFactory {
 
     async createPlayer(): Promise<IPlayMedia> {
 
+        await this.initPlayers();
+
         for ( const player of this._preferredOrder ) {
             if ( this._supportedPlayers.has( player ) ) {
                 switch ( player ) {
