@@ -3,10 +3,18 @@ import { IPlayMedia } from './i-play-media';
 import ChildProcess from 'child_process';
 import { AbstractPlayer } from './abstract-player';
 
+export interface OmxPlayerArgs {
+    additionalArgs: string[];
+}
+
 export class OmxPlayer extends AbstractPlayer implements IPlayMedia {
 
-    constructor() {
+    private readonly _additionalArgs: string[];
+
+    constructor( args: OmxPlayerArgs ) {
         super();
+
+        this._additionalArgs = args.additionalArgs;
     }
 
     static checkAvailability(): Promise<void> {
@@ -29,6 +37,8 @@ export class OmxPlayer extends AbstractPlayer implements IPlayMedia {
             // Video requires '-b'
             playerArgs.push( '-b' );
         }
+
+        playerArgs.push( ...this._additionalArgs );
 
         playerArgs.push( filePath );
 

@@ -1,4 +1,4 @@
-import { OmxPlayer } from './omx-player';
+import { OmxPlayer, OmxPlayerArgs } from './omx-player';
 import { MPlayer } from './m-player';
 import { VlcPlayer } from './vlc-player';
 import { IPlayMedia } from './i-play-media';
@@ -9,8 +9,6 @@ export enum MediaPlayerName {
     mplayer = 'mplayer',
     omxplayer = 'omxplayer',
 }
-
-export type PlayerFactoryType = new() => IPlayMedia;
 
 export interface AvPlayerFactoryArgs {
     /**
@@ -25,21 +23,38 @@ export interface AvPlayerFactoryArgs {
  */
 export class AvPlayerFactory {
 
+    private readonly _preferredOrder: MediaPlayerName[];
+    private readonly _supportedPlayers: Set<MediaPlayerName> = new Set();
+
+    private _omxPlayerArgs: OmxPlayerArgs = { additionalArgs: [] };
+
+    private _factoriesInitialised = false;
+
     constructor( args: AvPlayerFactoryArgs ) {
-        let priority = 0;
-        for ( const playerName of args.preferredOrder ?? [] ) {
-            this._playerPriorities.set( playerName, priority++ );
-        }
+        this._preferredOrder = args.preferredOrder ?? [ MediaPlayerName.omxplayer, MediaPlayerName.cvlc, MediaPlayerName.mplayer ];
     }
 
     async createPlayer(): Promise<IPlayMedia> {
-        const factory = ( await this.factories() )[ 0 ];
 
-        if ( factory !== undefined ) {
-            return new factory();
-        } else {
-            throw new Error( 'No players available.' );
+        for ( const player of this._preferredOrder ) {
+            if ( this._supportedPlayers.has( player ) ) {
+                switch ( player ) {
+                    case MediaPlayerName.omxplayer:
+                        return new OmxPlayer( this._omxPlayerArgs );
+                    case MediaPlayerName.cvlc:
+                    case MediaPlayerName.vlc:
+                        return new VlcPlayer();
+                    case MediaPlayerName.mplayer:
+                        return new MPlayer();
+                }
+            }
         }
+
+        throw new Error( 'No players available.' );
+    }
+
+    configureOmxPlayerArgs( args: OmxPlayerArgs ): void {
+        this._omxPlayerArgs = args;
     }
 
 
@@ -47,33 +62,31 @@ export class AvPlayerFactory {
      * Get a list of available factories.
      * Factories are only available if the corresponding player is installed.
      */
-    private async factories(): Promise<PlayerFactoryType[]> {
+    private async initPlayers(): Promise<void> {
         if ( !this._factoriesInitialised ) {
-
-            let factories: Map<MediaPlayerName, PlayerFactoryType> = new Map();
 
             const name = 'AvPlayerFactory';
 
             const vlcCheck = VlcPlayer.checkAvailability().then(
                 () => {
                     console.log( name + ': ✓ cvlc is available.' );
-                    factories.set( MediaPlayerName.cvlc, VlcPlayer );
-                    factories.set( MediaPlayerName.vlc, VlcPlayer );
+                    this._supportedPlayers.add( MediaPlayerName.vlc );
+                    this._supportedPlayers.add( MediaPlayerName.cvlc );
                 },
                 () => console.log( name + ': ✗ cvlc not available.' )
             );
 
             const omxCheck = OmxPlayer.checkAvailability().then(
                 () => {
-                    factories.set( MediaPlayerName.omxplayer, OmxPlayer );
                     console.log( name + ': ✓ omxplayer is available.' );
+                    this._supportedPlayers.add( MediaPlayerName.omxplayer );
                 },
                 () => console.log( name + ': ✗ omxplayer not available.' )
             );
 
             const mplayerCheck = MPlayer.checkAvailability().then(
                 () => {
-                    factories.set( MediaPlayerName.mplayer, MPlayer );
+                    this._supportedPlayers.add( MediaPlayerName.mplayer );
                     console.log( name + ': ✓ mplayer is available.' );
                 },
                 () => console.log( name + ': ✗ mplayer not available.' )
@@ -81,25 +94,8 @@ export class AvPlayerFactory {
 
             await Promise.all( [ vlcCheck, omxCheck, mplayerCheck ] );
 
-            if ( this._preferredPlayerOrder !== undefined ) {
-                for ( const playerName of this._preferredPlayerOrder ) {
-                    const factory = factories.get( playerName );
-                    if ( factory !== undefined ) {
-                        this._factories.push( factory );
-                    }
-                }
-            } else {
-                this._factories = Array.from( factories.values() );
-            }
+            this._factoriesInitialised = true;
         }
-
-        return this._factories;
     }
-
-
-    private readonly _preferredPlayerOrder: MediaPlayerName[] | undefined;
-    private _factories: PlayerFactoryType[] = [];
-    private _factoriesInitialised = false;
-    private readonly _playerPriorities: Map<string, number> = new Map();
 
 }
