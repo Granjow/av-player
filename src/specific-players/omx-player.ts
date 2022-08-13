@@ -1,7 +1,7 @@
-import { IPlayMedia } from './i-play-media';
+import { IPlayMedia } from '../ports/i-play-media';
 
 import ChildProcess from 'child_process';
-import { AbstractPlayer } from './abstract-player';
+import { AbstractPlayer } from '../abstract-player';
 
 export interface OmxPlayerArgs {
     /**
@@ -36,7 +36,8 @@ export class OmxPlayer extends AbstractPlayer implements IPlayMedia {
         const playerArgs: string[] = [
             '-no-osd',
             '--no-keys',
-            `--vol ${this.omxVolume}`,
+            '--vol',
+            this.omxVolume.toString( 10 ),
         ];
 
         if ( !/(mp3|wav|ogg)$/i.test( filePath ) ) {
@@ -45,13 +46,15 @@ export class OmxPlayer extends AbstractPlayer implements IPlayMedia {
         }
 
         playerArgs.push( ...this._additionalArgs );
-
         playerArgs.push( filePath );
 
         console.log( 'Player args: ', JSON.stringify( playerArgs ) );
         this._process = ChildProcess.spawn(
             'omxplayer',
-            playerArgs
+            playerArgs,
+            {
+                env: this.customEnv
+            }
         );
         this.emitPlaybackChange( true );
 

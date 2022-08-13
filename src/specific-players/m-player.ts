@@ -1,5 +1,6 @@
-import { AbstractPlayer } from './abstract-player';
-import { IPlayMedia } from './i-play-media';
+import { AbstractPlayer } from '../abstract-player';
+import { IPlayMedia } from '../ports/i-play-media';
+import { SpawnOptionsWithStdioTuple } from 'child_process';
 
 const childProcess = require( 'child_process' );
 
@@ -37,8 +38,9 @@ export class MPlayer extends AbstractPlayer implements IPlayMedia {
         // mplayer produces a lot of stdout data. When this data is not ignored in the spawn options
         // but also not read out in process.stdout.on(), it accumulates and probably fills an internal buffer,
         // causing playback to stop.
-        const opts = {
+        const opts: SpawnOptionsWithStdioTuple<any, any, any> = {
             stdio: [ 'pipe', 'ignore', 'pipe' ],
+            env: this.customEnv,
         };
         const args: string[] = [ '-nogui', '-display', ':0', '-fs', '-volume', this.mplayerVolume.toString( 10 ), filePath ];
         this._process = childProcess.spawn( 'mplayer', args, opts );

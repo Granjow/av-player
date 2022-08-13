@@ -1,6 +1,6 @@
-import { AbstractPlayer } from './abstract-player';
+import { AbstractPlayer } from '../abstract-player';
 import ChildProcess from 'child_process';
-import { IPlayMedia } from './i-play-media';
+import { IPlayMedia } from '../ports/i-play-media';
 
 export class VlcPlayer extends AbstractPlayer implements IPlayMedia {
 
@@ -39,7 +39,13 @@ export class VlcPlayer extends AbstractPlayer implements IPlayMedia {
             '-f', filePath,
         ];
 
-        this._process = ChildProcess.spawn( 'cvlc', args );
+        this._process = ChildProcess.spawn(
+            'cvlc',
+            args,
+            {
+                env: this.customEnv
+            }
+        );
 
         this._process.stderr?.on( 'data', ( data: any ) => {
             console.error( data.toString() );

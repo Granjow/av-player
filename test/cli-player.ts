@@ -1,5 +1,5 @@
 import { VrcConf } from 'vrc/dist/src/vrc-conf';
-import { AvPlayerFactory } from '../src/av-player-factory';
+import { AvPlayerFactory } from '../src';
 
 interface Conf {
     file: string;

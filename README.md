@@ -4,11 +4,11 @@
 Starts audio/video files with VLC, mplayer, or omxplayer, whatever is available.
 
 ```typescript
-import { AvPlayer } from '@geheimgang188/av-player';
+import { AvPlayer } from '@geheimgang188/av-player/dist/src';
 
-const player = new AvPlayer( [ 'vlc', 'omxplayer' ] );
+const player = new AvPlayer( config => config.setPreferredOrder( [ MediaPlayerName.vlc, MediaPlayerName.omxplayer ] ) );
 player.play( 'movie.mp3' ).catch(
-    ( err ) => console.error( 'Playback error', err )
+        ( err ) => console.error( 'Playback error', err )
 );
 ```
 
@@ -18,11 +18,14 @@ This player is extracted from [raspi-io-server-utils](https://www.npmjs.com/pack
 ## Todo
 
 * Remove console.log and use ILogger
-* Allow parameters for players like `--display 7` for omxplayer
-* Use player priority
+  * ILogger npm package
 
 ## Changelog
 
-### v0.1.0
-
-Initial release.
+* Upcoming
+  * Added: Custom arguments like `--display` can now be passed to omxplayer
+  * Added: Custom environment variables can be passed to video players
+  * Fixed: Volume is applied correctly to omxplayer
+  * Fixed: Player priority is now respected
+* **v0.0.1** (2021-07-15)
+  * Initial release

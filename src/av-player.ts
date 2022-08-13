@@ -1,5 +1,7 @@
-import { AvPlayerFactory, MediaPlayerName } from './av-player-factory';
-import { IPlayMedia } from './i-play-media';
+import { AvPlayerFactory } from './av-player-factory';
+import { IPlayMedia } from './ports/i-play-media';
+import { MediaPlayerName } from './media-player-name';
+import { TFactoryConfigurator } from './ports/i-configure-factory';
 
 const EventEmitter = require( 'events' );
 
@@ -37,14 +39,10 @@ export class AvPlayer extends EventEmitter {
 
     private _startedAt: number | undefined;
 
-    /**
-     * @param preferredPlayers Defines the order of preferred audio/video players. The first existing is used.
-     * See {@link AvPlayerFactory} for a list of valid players.
-     */
-    constructor( preferredPlayers?: MediaPlayerName[] ) {
+    constructor( configurator?: TFactoryConfigurator ) {
         super();
 
-        this._factory = new AvPlayerFactory( { preferredOrder: preferredPlayers } );
+        this._factory = new AvPlayerFactory( { configurator } );
 
         this._volume = 100;
         this._loop = false;

@@ -1,21 +1,14 @@
-import { OmxPlayer, OmxPlayerArgs } from './omx-player';
-import { MPlayer } from './m-player';
-import { VlcPlayer } from './vlc-player';
-import { IPlayMedia } from './i-play-media';
-
-export enum MediaPlayerName {
-    vlc = 'vlc',
-    cvlc = 'cvlc',
-    mplayer = 'mplayer',
-    omxplayer = 'omxplayer',
-}
+import { OmxPlayer } from './specific-players/omx-player';
+import { MPlayer } from './specific-players/m-player';
+import { VlcPlayer } from './specific-players/vlc-player';
+import { IPlayMedia } from './ports/i-play-media';
+import { IConfigurePlayer } from './ports/i-configure-player';
+import { IConfigureFactory } from './ports/i-configure-factory';
+import { FactoryConfig } from './factory-config';
+import { MediaPlayerName } from './media-player-name';
 
 export interface AvPlayerFactoryArgs {
-    /**
-     * If defined, only the listed players will be checked for availability,
-     * and the first one that is available will be used.
-     */
-    preferredOrder?: MediaPlayerName[];
+    configurator?: ( config: IConfigureFactory ) => void;
 }
 
 /**
@@ -23,42 +16,49 @@ export interface AvPlayerFactoryArgs {
  */
 export class AvPlayerFactory {
 
-    private readonly _preferredOrder: MediaPlayerName[];
     private readonly _supportedPlayers: Set<MediaPlayerName> = new Set();
 
-    private _omxPlayerArgs: OmxPlayerArgs = { additionalArgs: [] };
+    private _config: IConfigureFactory = new FactoryConfig();
 
     private _factoriesInitialised = false;
 
     constructor( args: AvPlayerFactoryArgs ) {
-        this._preferredOrder = args.preferredOrder ?? [ MediaPlayerName.omxplayer, MediaPlayerName.cvlc, MediaPlayerName.mplayer ];
+        if ( args.configurator !== undefined ) {
+            args.configurator( this._config );
+        }
     }
 
     async createPlayer(): Promise<IPlayMedia> {
 
         await this.initPlayers();
 
-        for ( const player of this._preferredOrder ) {
+        for ( const player of this._config.preferredPlayerOrder ) {
             if ( this._supportedPlayers.has( player ) ) {
+                let playerInstance: ( IPlayMedia & IConfigurePlayer ) | undefined;
                 switch ( player ) {
                     case MediaPlayerName.omxplayer:
-                        return new OmxPlayer( this._omxPlayerArgs );
+                        playerInstance = new OmxPlayer( this._config.omxPlayerArgs );
+                        break;
                     case MediaPlayerName.cvlc:
                     case MediaPlayerName.vlc:
-                        return new VlcPlayer();
+                        playerInstance = new VlcPlayer();
+                        break;
                     case MediaPlayerName.mplayer:
-                        return new MPlayer();
+                        playerInstance = new MPlayer();
+                        break;
+                }
+
+                if ( playerInstance !== undefined ) {
+                    if ( this._config.customEnv !== undefined ) {
+                        playerInstance.setCustomEnv( this._config.customEnv );
+                    }
+                    return playerInstance;
                 }
             }
         }
 
         throw new Error( 'No players available.' );
     }
-
-    configureOmxPlayerArgs( args: OmxPlayerArgs ): void {
-        this._omxPlayerArgs = args;
-    }
-
 
     /**
      * Get a list of available factories.

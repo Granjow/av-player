@@ -1,8 +1,11 @@
-import { ISubscribePlaybackState } from './i-subscribe-playback-state';
+import { ISubscribePlaybackState } from './ports/i-subscribe-playback-state';
 import { EventEmitter } from 'events';
-import { ISubscribeError } from './i-subscribe-error';
+import { ISubscribeError } from './ports/i-subscribe-error';
+import { IConfigurePlayer } from './ports/i-configure-player';
 
-export abstract class AbstractPlayer implements ISubscribePlaybackState, ISubscribeError {
+export abstract class AbstractPlayer implements ISubscribePlaybackState, ISubscribeError, IConfigurePlayer {
+
+    protected customEnv: NodeJS.ProcessEnv | undefined;
 
     protected constructor() {
         this._volume = 50;
@@ -30,6 +33,10 @@ export abstract class AbstractPlayer implements ISubscribePlaybackState, ISubscr
         } else {
             this._events.on( 'error', cb );
         }
+    }
+
+    setCustomEnv( env: NodeJS.ProcessEnv ) {
+        this.customEnv = env;
     }
 
     /**
