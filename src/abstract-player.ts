@@ -2,13 +2,20 @@ import { ISubscribePlaybackState } from './ports/i-subscribe-playback-state';
 import { EventEmitter } from 'events';
 import { ISubscribeError } from './ports/i-subscribe-error';
 import { IConfigurePlayer } from './ports/i-configure-player';
+import { ILogger } from '@geheimgang188/i-logger';
+
+export interface AbstractPlayerArgs {
+    logger: ILogger | undefined;
+}
 
 export abstract class AbstractPlayer implements ISubscribePlaybackState, ISubscribeError, IConfigurePlayer {
 
     protected customEnv: NodeJS.ProcessEnv | undefined;
+    protected readonly logger: ILogger | undefined;
 
-    protected constructor() {
+    protected constructor( args: AbstractPlayerArgs ) {
         this._volume = 50;
+        this.logger = args.logger?.child( { what: 'Player' } );
     }
 
     protected emitPlaybackChange( running: boolean ): void {

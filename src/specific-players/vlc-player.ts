@@ -1,4 +1,4 @@
-import { AbstractPlayer } from '../abstract-player';
+import { AbstractPlayer, AbstractPlayerArgs } from '../abstract-player';
 import ChildProcess from 'child_process';
 import { IPlayMedia } from '../ports/i-play-media';
 
@@ -13,8 +13,8 @@ export class VlcPlayer extends AbstractPlayer implements IPlayMedia {
         } );
     }
 
-    constructor() {
-        super();
+    constructor( args: AbstractPlayerArgs ) {
+        super( args );
     }
 
     get running() {
@@ -48,7 +48,7 @@ export class VlcPlayer extends AbstractPlayer implements IPlayMedia {
         );
 
         this._process.stderr?.on( 'data', ( data: any ) => {
-            console.error( data.toString() );
+            this.logger?.error( data.toString() );
 
             stderr += data.toString();
             stderr.split( '\n' )
@@ -61,11 +61,11 @@ export class VlcPlayer extends AbstractPlayer implements IPlayMedia {
         } );
 
         this._process.on( 'exit', () => {
-            console.log( 'Exited.' );
+            this.logger?.trace( 'Exited.' );
             this.stop();
         } );
         this._process.on( 'error', ( err: Error ) => {
-            console.error( 'Error!', err );
+            this.logger?.error( 'Error!', err );
             this.emitError( err );
             this.stop();
         } );

@@ -15,16 +15,12 @@ player.play( 'movie.mp3' ).catch(
 
 This player is extracted from [raspi-io-server-utils](https://www.npmjs.com/package/raspi-io-server-utils).
 
-## Todo
-
-* Remove console.log and use ILogger
-  * ILogger npm package
-
 ## Changelog
 
 * Upcoming
   * Added: Custom arguments like `--display` can now be passed to omxplayer
   * Added: Custom environment variables can be passed to video players
+  * Changed: A custom logger can now be specified in the configuration. Without logger, no output is logged.
   * Fixed: Volume is applied correctly to omxplayer
   * Fixed: Player priority is now respected
 * **v0.0.1** (2021-07-15)

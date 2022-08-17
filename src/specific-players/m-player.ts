@@ -1,6 +1,7 @@
-import { AbstractPlayer } from '../abstract-player';
+import { AbstractPlayer, AbstractPlayerArgs } from '../abstract-player';
 import { IPlayMedia } from '../ports/i-play-media';
 import { SpawnOptionsWithStdioTuple } from 'child_process';
+import { ILogger } from '@geheimgang188/i-logger';
 
 const childProcess = require( 'child_process' );
 
@@ -17,8 +18,8 @@ export class MPlayer extends AbstractPlayer implements IPlayMedia {
 
     private _process: any;
 
-    constructor() {
-        super();
+    constructor( args: AbstractPlayerArgs ) {
+        super( args );
     }
 
     get running() {
@@ -46,15 +47,15 @@ export class MPlayer extends AbstractPlayer implements IPlayMedia {
         this._process = childProcess.spawn( 'mplayer', args, opts );
 
         this._process.stderr.on( 'data', ( data: Buffer ) => {
-            console.error( data.toString() );
+            this.logger?.error( data.toString() );
         } );
 
         this._process.on( 'exit', () => {
-            console.log( 'mplayer exited.' );
+            this.logger?.debug( 'mplayer exited.' );
             this.stop();
         } );
         this._process.on( 'error', ( err: Error ) => {
-            console.error( 'mplayer error:', err );
+            this.logger?.error( 'mplayer error:', err );
             this.stop();
         } );
 

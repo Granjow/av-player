@@ -12,7 +12,7 @@ const conf = new VrcConf<Conf>( 'foo', [
 conf.printArgs();
 
 const run = async () => {
-    const factory = new AvPlayerFactory( {} );
+    const factory = new AvPlayerFactory( { configurator: ( conf ) => conf.setLogger( 'console' ) } );
     const player = await factory.createPlayer();
     player.play( conf.conf.file )
         .catch( err => console.error( err ) );

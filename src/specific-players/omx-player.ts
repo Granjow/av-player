@@ -1,7 +1,7 @@
 import { IPlayMedia } from '../ports/i-play-media';
 
 import ChildProcess from 'child_process';
-import { AbstractPlayer } from '../abstract-player';
+import { AbstractPlayer, AbstractPlayerArgs } from '../abstract-player';
 
 export interface OmxPlayerArgs {
     /**
@@ -17,8 +17,8 @@ export class OmxPlayer extends AbstractPlayer implements IPlayMedia {
 
     private readonly _additionalArgs: string[];
 
-    constructor( args: OmxPlayerArgs ) {
-        super();
+    constructor( baseArgs: AbstractPlayerArgs, args: OmxPlayerArgs ) {
+        super( baseArgs );
 
         this._additionalArgs = args.additionalArgs;
     }
@@ -48,7 +48,7 @@ export class OmxPlayer extends AbstractPlayer implements IPlayMedia {
         playerArgs.push( ...this._additionalArgs );
         playerArgs.push( filePath );
 
-        console.log( 'Player args: ', JSON.stringify( playerArgs ) );
+        this.logger?.debug( 'Player args: ', JSON.stringify( playerArgs ) );
         this._process = ChildProcess.spawn(
             'omxplayer',
             playerArgs,
@@ -59,19 +59,19 @@ export class OmxPlayer extends AbstractPlayer implements IPlayMedia {
         this.emitPlaybackChange( true );
 
         this._process.stderr?.on( 'data', ( data: Buffer ) => {
-            console.error( data.toString() );
+            this.logger?.error( data.toString() );
         } );
 
         this._process.stdout?.on( 'data', ( data: Buffer ) => {
-            console.log( data.toString() );
+            this.logger?.debug( data.toString() );
         } );
 
         this._process.on( 'exit', () => {
-            console.log( 'Exited.' );
+            this.logger?.trace( 'Exited.' );
             this.emitPlaybackChange( false );
         } );
         this._process.on( 'error', ( err: Error ) => {
-            console.error( 'Error!', err );
+            this.logger?.error( 'Error!', err );
             this.emitPlaybackChange( false );
         } );
     }
