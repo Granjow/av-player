@@ -1,7 +1,7 @@
 {
   "name": "@geheimgang188/av-player",
-  "version": "1.1.0-beta5",
-  "description": "Audio/Video player for the raspberry pi",
+  "version": "1.1.0",
+  "description": "Audio/Video player for the Raspberry Pi",
   "files": [
     "dist/src/*"
   ],
@@ -26,7 +26,7 @@
   },
   "devDependencies": {
     "@types/node": "^16.3.2",
-    "typescript": "^4.3.5",
+    "typescript": "^4.7.4",
     "vrc": "^2.5.2"
   }
 }

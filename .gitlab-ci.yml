@@ -1,8 +1,17 @@
-build:
+build:10:
   stage: build
   tags:
-  - docker
+  - linux
   image: node:10
+  script:
+    - npm ci
+    - npm run build
+
+build:16:
+  stage: build
+  tags:
+  - linux
+  image: node:16
   script:
     - npm ci
     - npm run build
