@@ -15,6 +15,10 @@ player.play( 'movie.mp3' ).catch(
 );
 ```
 
+## Notes
+
+`omxplayer` may need a small delay after stopping one video and starting the next one.
+
 
 ## Changelog
 
