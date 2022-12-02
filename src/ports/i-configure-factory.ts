@@ -19,7 +19,14 @@ export interface IConfigureFactory {
     setLogger( logger: ILogger | 'console' | undefined ): IConfigureFactory;
 
     /**
-     * Custom configuration for omxplayer
+     * Custom configuration for omxplayer.
+     *
+     * Note that omxplayer is deprecated and vlc should be preferred:
+     * https://github.com/popcornmix/omxplayer
+     *
+     * See https://pimylifeup.com/raspberry-pi-omxplayer/ for details on some commands.
+     *
+     * --display: 2 = HDMI0 and 7 = HDMI1 (Pi 4), 5 = HDMI (Pi 1-3), 4 = Touchscreen
      */
     configureOmxPlayer( omxPlayerArgs: OmxPlayerArgs ): IConfigureFactory;
 
