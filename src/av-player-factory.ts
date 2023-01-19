@@ -55,7 +55,9 @@ export class AvPlayerFactory {
                 }
 
                 if ( playerInstance !== undefined ) {
+                    this._logger?.info( `Created player of type ${player}` );
                     if ( this._config.customEnv !== undefined ) {
+                        this._logger?.debug( `Setting custom environment for video player: ${JSON.stringify( this._config.customEnv )}` );
                         playerInstance.setCustomEnv( this._config.customEnv );
                     }
                     return playerInstance;

@@ -39,6 +39,8 @@ export class VlcPlayer extends AbstractPlayer implements IPlayMedia {
             '-f', filePath,
         ];
 
+        this.logger?.debug( `Running cvlc ${args.join( ' ' )}` );
+
         this._process = ChildProcess.spawn(
             'cvlc',
             args,
@@ -48,20 +50,26 @@ export class VlcPlayer extends AbstractPlayer implements IPlayMedia {
         );
 
         this._process.stderr?.on( 'data', ( data: any ) => {
-            this.logger?.error( data.toString() );
+            const errorString = data.toString();
+            if ( errorString.includes( 'error' ) ) {
+                this.logger?.warn( `Error on stderr: ${errorString}` );
+            }
 
-            stderr += data.toString();
+            stderr += errorString;
             stderr.split( '\n' )
                 .filter( line => line.indexOf( 'cannot open file' ) > 0 )
                 .some( ( err: string ) => {
                     this.emitError( new Error( err ) );
+
+                    this.logger?.error( `Error: ${err}.\nComplete stderr: ${stderr}` );
+
                     this.stop();
                     return true;
                 } );
         } );
 
         this._process.on( 'exit', () => {
-            this.logger?.trace( 'Exited.' );
+            this.logger?.debug( `Exited from playing ${filePath}.` );
             this.stop();
         } );
         this._process.on( 'error', ( err: Error ) => {

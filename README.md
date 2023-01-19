@@ -22,6 +22,8 @@ player.play( 'movie.mp3' ).catch(
 
 ## Changelog
 
+* **v1.2.0** (2023-01-19)
+  * Changed: Logging for vlc/cvlc improved (less noise, more info)
 * **v1.1.0** (2022-08-20): This release focuses on configuration support for
   omxplayer, allowing to specify the output display and audio channel (e.g.
   audio over HDMI or another channel).
