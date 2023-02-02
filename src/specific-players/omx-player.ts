@@ -6,6 +6,7 @@ import { AbstractPlayer, AbstractPlayerArgs } from '../abstract-player';
 export interface OmxPlayerArgs {
     /**
      * On a Raspberry Pi 4:
+     * --display N
      * 2 = hdmi0
      * 7 = hdmi1
      * https://forums.raspberrypi.com/viewtopic.php?f=63&t=244589

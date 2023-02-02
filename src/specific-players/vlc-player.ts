@@ -66,6 +66,14 @@ export class VlcPlayer extends AbstractPlayer implements IPlayMedia {
                     this.stop();
                     return true;
                 } );
+            if ( errorString.includes( 'window not available' ) ) {
+                this.emitError( new Error( 'No window available. Consider using fkms instead of kms if on a Raspi 4.' ) );
+
+                this.logger?.error( `Error: ${errorString}.\nComplete stderr: ${stderr}` );
+
+                this.stop();
+                return true;
+            }
         } );
 
         this._process.on( 'exit', () => {
