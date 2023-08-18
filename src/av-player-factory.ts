@@ -47,7 +47,7 @@ export class AvPlayerFactory {
                         break;
                     case MediaPlayerName.cvlc:
                     case MediaPlayerName.vlc:
-                        playerInstance = new VlcPlayer( baseArgs( 'VlcPlayer' ) );
+                        playerInstance = new VlcPlayer( baseArgs( 'VlcPlayer' ), this._config.vlcPlayerArgs );
                         break;
                     case MediaPlayerName.mplayer:
                         playerInstance = new MPlayer( baseArgs( 'MPlayer' ) );

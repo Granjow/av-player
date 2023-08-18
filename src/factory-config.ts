@@ -3,6 +3,7 @@ import { OmxPlayerArgs } from './specific-players/omx-player';
 import { MediaPlayerName } from './media-player-name';
 import { ILogger } from '@geheimgang188/i-logger';
 import { ConsoleLogger } from './console-logger';
+import { VlcPlayerArgs } from './specific-players/vlc-player';
 
 export class FactoryConfig implements IConfigureFactory {
 
@@ -11,7 +12,10 @@ export class FactoryConfig implements IConfigureFactory {
     private _logger: ILogger | undefined;
     private _omxPlayerArgs: OmxPlayerArgs = {
         additionalArgs: [],
-    }
+    };
+    private _vlcPlayerArgs: VlcPlayerArgs = {
+        additionalArgs: [],
+    };
 
     get customEnv(): NodeJS.ProcessEnv | undefined {
         return this._customEnv;
@@ -19,6 +23,10 @@ export class FactoryConfig implements IConfigureFactory {
 
     get omxPlayerArgs(): OmxPlayerArgs {
         return this._omxPlayerArgs;
+    }
+
+    get vlcPlayerArgs(): VlcPlayerArgs {
+        return this._vlcPlayerArgs;
     }
 
     get preferredPlayerOrder(): MediaPlayerName[] {
@@ -31,6 +39,11 @@ export class FactoryConfig implements IConfigureFactory {
 
     configureOmxPlayer( omxPlayerArgs: OmxPlayerArgs ): IConfigureFactory {
         this._omxPlayerArgs = omxPlayerArgs;
+        return this;
+    }
+
+    configureVlcPlayer( vlcPlayerArgs: VlcPlayerArgs ): IConfigureFactory {
+        this._vlcPlayerArgs = vlcPlayerArgs;
         return this;
     }
 

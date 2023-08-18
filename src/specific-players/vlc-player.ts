@@ -2,7 +2,15 @@ import { AbstractPlayer, AbstractPlayerArgs } from '../abstract-player';
 import ChildProcess from 'child_process';
 import { IPlayMedia } from '../ports/i-play-media';
 
+export interface VlcPlayerArgs {
+    additionalArgs: string[];
+}
+
 export class VlcPlayer extends AbstractPlayer implements IPlayMedia {
+
+    private readonly _vlcPlayerArgs: VlcPlayerArgs;
+
+    private _process: ChildProcess.ChildProcess | undefined = undefined;
 
     static checkAvailability(): Promise<void> {
         return new Promise( ( resolve, reject ) => {
@@ -13,8 +21,9 @@ export class VlcPlayer extends AbstractPlayer implements IPlayMedia {
         } );
     }
 
-    constructor( args: AbstractPlayerArgs ) {
+    constructor( args: AbstractPlayerArgs, vlcPlayerArgs: VlcPlayerArgs ) {
         super( args );
+        this._vlcPlayerArgs = vlcPlayerArgs;
     }
 
     get running() {
@@ -37,7 +46,7 @@ export class VlcPlayer extends AbstractPlayer implements IPlayMedia {
             `--gain=${this.vlcVolume}`,
             '--no-video-title-show',
             '-f', filePath,
-        ];
+        ].concat( this._vlcPlayerArgs.additionalArgs );
 
         this.logger?.debug( `Running cvlc ${args.join( ' ' )}` );
 
@@ -97,7 +106,5 @@ export class VlcPlayer extends AbstractPlayer implements IPlayMedia {
             this.emitPlaybackChange( false );
         }
     }
-
-    private _process: ChildProcess.ChildProcess | undefined = undefined;
 
 }

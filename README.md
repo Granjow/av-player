@@ -22,6 +22,8 @@ player.play( 'movie.mp3' ).catch(
 
 ## Changelog
 
+* **Upcoming**
+  * Added: VLC can now be started with custom parameters
 * **v1.2.0** (2023-01-19)
   * Changed: Logging for vlc/cvlc improved (less noise, more info)
 * **v1.1.0** (2022-08-20): This release focuses on configuration support for
