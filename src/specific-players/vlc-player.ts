@@ -1,6 +1,6 @@
 import { AbstractPlayer, AbstractPlayerArgs } from '../abstract-player';
 import ChildProcess from 'child_process';
-import { IPlayMedia } from '../ports/i-play-media';
+import { IPlayMedia, PlayOptions } from '../ports/i-play-media';
 
 export interface VlcPlayerArgs {
     additionalArgs: string[];
@@ -38,7 +38,7 @@ export class VlcPlayer extends AbstractPlayer implements IPlayMedia {
         return this._volume / 100 * 2;
     }
 
-    async play( filePath: string ): Promise<void> {
+    async play( filePath: string, playOptions?: PlayOptions ): Promise<void> {
         let stderr = '';
 
         const args: string[] = [
@@ -47,6 +47,10 @@ export class VlcPlayer extends AbstractPlayer implements IPlayMedia {
             '--no-video-title-show',
             '-f', filePath,
         ].concat( this._vlcPlayerArgs.additionalArgs );
+
+        if ( playOptions?.loop && !args.includes( '-R' ) ) {
+            args.push( '-R' )
+        }
 
         this.logger?.debug( `Running cvlc ${args.join( ' ' )}` );
 

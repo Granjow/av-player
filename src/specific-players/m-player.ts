@@ -1,5 +1,5 @@
 import { AbstractPlayer, AbstractPlayerArgs } from '../abstract-player';
-import { IPlayMedia } from '../ports/i-play-media';
+import { IPlayMedia, PlayOptions } from '../ports/i-play-media';
 import { SpawnOptionsWithStdioTuple } from 'child_process';
 import { ILogger } from '@geheimgang188/i-logger';
 
@@ -34,7 +34,9 @@ export class MPlayer extends AbstractPlayer implements IPlayMedia {
         return this._volume;
     }
 
-    async play( filePath: string ): Promise<void> {
+    async play( filePath: string, playOptions?: PlayOptions ): Promise<void> {
+
+        if ( playOptions?.loop ) throw new Error( 'Loop: Not supported yet for mplayer' );
 
         // mplayer produces a lot of stdout data. When this data is not ignored in the spawn options
         // but also not read out in process.stdout.on(), it accumulates and probably fills an internal buffer,

@@ -2,6 +2,8 @@
 
 Starts audio/video files with VLC, mplayer, or omxplayer, whatever is available.
 
+Note that omxplayer is deprecated and replaced by VLC in newer Raspberry distributions.
+
 We use this player for our Escape Rooms at [Geheimgang 188](https://geheimgang.ch/).
 
 ```typescript
@@ -22,8 +24,9 @@ player.play( 'movie.mp3' ).catch(
 
 ## Changelog
 
-* **Upcoming**
+* **v1.3.0**
   * Added: VLC can now be started with custom parameters
+  * Added: `play()` now accepts additional play options which for now can loop videos with VLC
 * **v1.2.0** (2023-01-19)
   * Changed: Logging for vlc/cvlc improved (less noise, more info)
 * **v1.1.0** (2022-08-20): This release focuses on configuration support for

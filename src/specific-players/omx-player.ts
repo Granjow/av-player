@@ -1,4 +1,4 @@
-import { IPlayMedia } from '../ports/i-play-media';
+import { IPlayMedia, PlayOptions } from '../ports/i-play-media';
 
 import ChildProcess from 'child_process';
 import { AbstractPlayer, AbstractPlayerArgs } from '../abstract-player';
@@ -33,7 +33,10 @@ export class OmxPlayer extends AbstractPlayer implements IPlayMedia {
         } );
     }
 
-    async play( filePath: string ): Promise<void> {
+    async play( filePath: string, playOptions?: PlayOptions ): Promise<void> {
+
+        if ( playOptions?.loop ) throw new Error( 'Loop: Not supported yet for omxplayer' );
+
         const playerArgs: string[] = [
             '-no-osd',
             '--no-keys',
