@@ -24,7 +24,9 @@ player.play( 'movie.mp3' ).catch(
 
 ## Changelog
 
-* **v1.3.0**
+* **v1.4.0** (2024-07-16)
+  * Changed: The `configurator` parameter can now return a `Promise` to allow asynchronous configuration
+* **v1.3.0** (2023-08-18)
   * Added: VLC can now be started with custom parameters
   * Added: `play()` now accepts additional play options which for now can loop videos with VLC
 * **v1.2.0** (2023-01-19)

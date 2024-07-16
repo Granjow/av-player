@@ -9,8 +9,10 @@ import { MediaPlayerName } from './media-player-name';
 import { ILogger } from '@geheimgang188/i-logger';
 import { AbstractPlayerArgs } from './abstract-player';
 
+export type TConfigurator = ( config: IConfigureFactory ) => any | Promise<any>;
+
 export interface AvPlayerFactoryArgs {
-    configurator?: ( config: IConfigureFactory ) => void;
+    configurator?: TConfigurator;
 }
 
 /**
@@ -24,15 +26,25 @@ export class AvPlayerFactory {
 
     private _factoriesInitialised = false;
 
+    private readonly _configurator: TConfigurator | undefined;
+
     constructor( args: AvPlayerFactoryArgs ) {
         if ( args.configurator !== undefined ) {
-            args.configurator( this._config );
             this._logger = this._config.logger;
+            this._configurator = args.configurator;
         }
     }
 
     async createPlayer(): Promise<IPlayMedia> {
 
+        if ( this._configurator !== undefined ) {
+            this._logger?.debug( `Configuring AVPlayer.` );
+            const result = this._configurator( this._config );
+            if ( result !== undefined && result instanceof Promise ) {
+                await result;
+            }
+            this._logger?.debug( `Configuration done.` );
+        }
         await this.initPlayers();
 
         for ( const player of this._config.preferredPlayerOrder ) {
