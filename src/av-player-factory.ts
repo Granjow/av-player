@@ -13,6 +13,7 @@ export type TConfigurator = ( config: IConfigureFactory ) => any | Promise<any>;
 
 export interface AvPlayerFactoryArgs {
     configurator?: TConfigurator;
+    logger?: ILogger;
 }
 
 /**
@@ -20,7 +21,7 @@ export interface AvPlayerFactoryArgs {
  */
 export class AvPlayerFactory {
 
-    private readonly _logger: ILogger | undefined;
+    private _logger: ILogger | undefined;
     private readonly _supportedPlayers: Set<MediaPlayerName> = new Set();
     private readonly _config: IConfigureFactory = new FactoryConfig();
 
@@ -29,10 +30,8 @@ export class AvPlayerFactory {
     private readonly _configurator: TConfigurator | undefined;
 
     constructor( args: AvPlayerFactoryArgs ) {
-        if ( args.configurator !== undefined ) {
-            this._logger = this._config.logger;
-            this._configurator = args.configurator;
-        }
+        this._logger = args.logger;
+        this._configurator = args.configurator;
     }
 
     async createPlayer(): Promise<IPlayMedia> {
@@ -42,6 +41,9 @@ export class AvPlayerFactory {
             const result = this._configurator( this._config );
             if ( result !== undefined && result instanceof Promise ) {
                 await result;
+            }
+            if ( this._config.logger !== undefined ) {
+                this._logger = this._config.logger;
             }
             this._logger?.debug( `Configuration done.` );
         }
