@@ -3,4 +3,5 @@ export enum MediaPlayerName {
     cvlc = 'cvlc',
     mplayer = 'mplayer',
     omxplayer = 'omxplayer',
+    stub = 'stub',
 }

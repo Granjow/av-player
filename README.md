@@ -19,11 +19,20 @@ player.play( 'movie.mp3' ).catch(
 
 ## Notes
 
+When playing videos from a systemd service, the video player needs additional variables to run,
+which are:
+
+* `DISPLAY`
+* `HOME` (to find the `.Xauthority` file if it is in the home directory)
+* `XAUTHORITY` (if there is no `$HOME/.Xauthority`)
+
 `omxplayer` may need a small delay after stopping one video and starting the next one.
 
 
 ## Changelog
 
+* **v1.5.0**
+  * Added: `StubPlayer` which does not do anything, for debugging/testing
 * **v1.4.0** (2024-07-16)
   * Changed: The `configurator` parameter can now return a `Promise` to allow asynchronous configuration.
   * Changed: A logger can now be provided in the factory constructor arguments.

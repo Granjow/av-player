@@ -8,6 +8,7 @@ import { FactoryConfig } from './factory-config';
 import { MediaPlayerName } from './media-player-name';
 import { ILogger } from '@geheimgang188/i-logger';
 import { AbstractPlayerArgs } from './abstract-player';
+import { StubPlayer } from './specific-players/stub-player';
 
 export type TConfigurator = ( config: IConfigureFactory ) => any | Promise<any>;
 
@@ -66,6 +67,9 @@ export class AvPlayerFactory {
                     case MediaPlayerName.mplayer:
                         playerInstance = new MPlayer( baseArgs( 'MPlayer' ) );
                         break;
+                    case MediaPlayerName.stub:
+                        playerInstance = new StubPlayer( baseArgs( 'StubPlayer' ) );
+                        break;
                 }
 
                 if ( playerInstance !== undefined ) {
@@ -90,6 +94,8 @@ export class AvPlayerFactory {
         if ( !this._factoriesInitialised ) {
 
             const name = 'AvPlayerFactory';
+
+            this._supportedPlayers.add( MediaPlayerName.stub );
 
             const vlcCheck = VlcPlayer.checkAvailability().then(
                 () => {
